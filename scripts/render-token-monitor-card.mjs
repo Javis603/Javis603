@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
@@ -6,6 +6,10 @@ const ENDPOINT = process.env.TOKEN_MONITOR_PUBLIC_STATS_URL
   || 'https://token-monitor-hub.javis603.workers.dev/api/public/stats';
 const OUTPUT_DIR = process.env.TOKEN_MONITOR_CARD_DIR
   || path.join(process.cwd(), 'assets');
+const FONTS = JSON.parse(await readFile(
+  process.env.TOKEN_MONITOR_CARD_FONTS || new URL('./fonts.json', import.meta.url),
+  'utf8',
+));
 
 const WIDTH = 840;
 const HEIGHT = 270;
@@ -151,8 +155,9 @@ function renderSvg(stats, theme) {
     </linearGradient>
   </defs>
   <style>
-    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; }
-    .counter { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-variant-numeric: tabular-nums; }
+${FONTS.faces.map((f) => `    @font-face { font-family: '${f.family}'; font-style: ${f.style}; font-weight: ${f.weight}; src: url(data:font/woff2;base64,${f.b64}) format('woff2'); }`).join('\n')}
+    .headline { font-family: ${FONTS.headline.family}; }
+    .counter { font-family: ${FONTS.mono.family}; font-variant-numeric: tabular-nums; }
     .headline { animation: rise .9s cubic-bezier(.2,.6,.2,1) both; }
     .hairline { stroke-dasharray: 1 2; animation: draw 2.4s cubic-bezier(.45,0,.2,1) .4s both; }
     .now { animation: fade .7s ease-out 2.5s both; }
@@ -164,10 +169,10 @@ function renderSvg(stats, theme) {
       .headline, .hairline, .now, .counter { animation: none; }
     }
   </style>
-  <text class="headline" x="${WIDTH / 2}" y="102" text-anchor="middle" fill="${t.headline}" font-size="42" font-weight="600" letter-spacing="-.4">Hello, I am Javis</text>
+  <text class="headline" x="${WIDTH / 2}" y="102" text-anchor="middle" fill="${t.headline}" font-size="${FONTS.headline.size}" font-weight="${FONTS.headline.weight}" letter-spacing="${FONTS.headline.tracking}">Hello, I am ${FONTS.headline.italicName ? '<tspan font-style="italic">Javis</tspan>' : 'Javis'}</text>
   <path class="hairline" pathLength="1" d="${line.path}" stroke="url(#rule)" stroke-width="1.5"/>
   <circle class="now" cx="${line.endX}" cy="${line.endY}" r="2.4" fill="${t.accent}"/>
-  <text class="counter" x="${WIDTH / 2}" y="219" text-anchor="middle" font-size="14.5" letter-spacing=".2"><tspan fill="${t.number}">${escapeXml(totalText)}</tspan><tspan fill="${t.muted}">${escapeXml(streakText)}</tspan></text>
+  <text class="counter" x="${WIDTH / 2}" y="219" text-anchor="middle" font-size="${FONTS.mono.size}" letter-spacing="${FONTS.mono.tracking}"><tspan fill="${t.number}">${escapeXml(totalText)}</tspan><tspan fill="${t.muted}">${escapeXml(streakText)}</tspan></text>
 </svg>
 `;
 }

@@ -165,7 +165,7 @@ function renderSvg(stats, theme) {
     }
   </style>
   <text class="headline" x="${WIDTH / 2}" y="102" text-anchor="middle" fill="${t.headline}" font-size="42" font-weight="600" letter-spacing="-.4">Hello, I am Javis</text>
-  <path class="hairline" pathLength="1" d="${line.path}" stroke="url(#rule)" stroke-width="1.5" stroke-linecap="round"/>
+  <path class="hairline" pathLength="1" d="${line.path}" stroke="url(#rule)" stroke-width="1.5"/>
   <circle class="now" cx="${line.endX}" cy="${line.endY}" r="2.4" fill="${t.accent}"/>
   <text class="counter" x="${WIDTH / 2}" y="219" text-anchor="middle" font-size="14.5" letter-spacing=".2"><tspan fill="${t.number}">${escapeXml(totalText)}</tspan><tspan fill="${t.muted}">${escapeXml(streakText)}</tspan></text>
 </svg>

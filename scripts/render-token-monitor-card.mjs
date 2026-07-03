@@ -20,12 +20,14 @@ const THEMES = {
     number: '#C9D1D9',
     muted: '#8B949E',
     accent: '#58A6FF',
+    pulse: '#A5D6FF',
   },
   light: {
     headline: '#1F2328',
     number: '#3D444D',
     muted: '#6E7781',
     accent: '#0969DA',
+    pulse: '#54AEFF',
   },
 };
 
@@ -153,6 +155,15 @@ function renderSvg(stats, theme) {
       <stop offset=".5" stop-color="${t.accent}"/>
       <stop offset="1" stop-color="${t.accent}"/>
     </linearGradient>
+    <linearGradient id="pulseGrad" x1="190" y1="0" x2="${WIDTH - 190}" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="${t.pulse}" stop-opacity="0"/>
+      <stop offset=".16" stop-color="${t.pulse}" stop-opacity=".6"/>
+      <stop offset=".5" stop-color="${t.pulse}"/>
+      <stop offset="1" stop-color="${t.pulse}"/>
+    </linearGradient>
+    <filter id="soften" x="-5%" y="-300%" width="110%" height="700%">
+      <feGaussianBlur stdDeviation=".6"/>
+    </filter>
   </defs>
   <style>
 ${FONTS.faces.map((f) => `    @font-face { font-family: '${f.family}'; font-style: ${f.style}; font-weight: ${f.weight}; src: url(data:font/woff2;base64,${f.b64}) format('woff2'); }`).join('\n')}
@@ -160,17 +171,26 @@ ${FONTS.faces.map((f) => `    @font-face { font-family: '${f.family}'; font-styl
     .counter { font-family: ${FONTS.mono.family}; font-variant-numeric: tabular-nums; }
     .headline { animation: rise .9s cubic-bezier(.2,.6,.2,1) both; }
     .hairline { stroke-dasharray: 1 2; animation: draw 2.4s cubic-bezier(.45,0,.2,1) .4s both; }
-    .now { animation: fade .7s ease-out 2.5s both; }
+    .pulse { animation: comet 9s linear 4s infinite; }
+    .now { transform-box: fill-box; transform-origin: center; animation: fade .7s ease-out 2.5s both, beat 9s ease-in-out 4s infinite; }
     .counter { animation: fade .8s ease-out 1.5s both; }
     @keyframes rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
     @keyframes draw { from { stroke-dashoffset: 1.35; } to { stroke-dashoffset: 0; } }
     @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    /* -.93 = comet tip touches the dot, -1 = fully absorbed; the beat is keyed to those moments */
+    @keyframes comet {
+      0% { stroke-dashoffset: .2; animation-timing-function: cubic-bezier(.5,.05,.55,.95); }
+      26% { stroke-dashoffset: -.93; animation-timing-function: linear; }
+      30%, 100% { stroke-dashoffset: -1.14; }
+    }
+    @keyframes beat { 0%, 26% { transform: none; } 31% { transform: scale(1.5); } 43%, 100% { transform: none; } }
     @media (prefers-reduced-motion: reduce) {
-      .headline, .hairline, .now, .counter { animation: none; }
+      .headline, .hairline, .pulse, .now, .counter { animation: none; }
     }
   </style>
   <text class="headline" x="${WIDTH / 2}" y="102" text-anchor="middle" fill="${t.headline}" font-size="${FONTS.headline.size}" font-weight="${FONTS.headline.weight}" letter-spacing="${FONTS.headline.tracking}">Hello, I am ${FONTS.headline.italicName ? '<tspan font-style="italic">Javis</tspan>' : 'Javis'}</text>
   <path class="hairline" pathLength="1" d="${line.path}" stroke="url(#rule)" stroke-width="1.5"/>
+  <path class="pulse" pathLength="1" d="${line.path}" stroke="url(#pulseGrad)" stroke-width="1.8" stroke-dasharray=".07 1.35" stroke-dashoffset=".2" filter="url(#soften)" opacity=".85"/>
   <circle class="now" cx="${line.endX}" cy="${line.endY}" r="2.4" fill="${t.accent}"/>
   <text class="counter" x="${WIDTH / 2}" y="219" text-anchor="middle" font-size="${FONTS.mono.size}" letter-spacing="${FONTS.mono.tracking}"><tspan fill="${t.number}">${escapeXml(totalText)}</tspan><tspan fill="${t.muted}">${escapeXml(streakText)}</tspan></text>
 </svg>

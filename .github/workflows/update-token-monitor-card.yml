@@ -1,0 +1,30 @@
+name: Update Token Monitor Card
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  update-card:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/render-token-monitor-card.mjs
+      - name: Commit card update
+        run: |
+          if git diff --quiet -- assets/token-monitor-dark.svg assets/token-monitor-light.svg; then
+            echo "No card changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/token-monitor-dark.svg assets/token-monitor-light.svg
+          git commit -m "chore: update token monitor card"
+          git push

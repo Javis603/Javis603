@@ -154,11 +154,11 @@ function renderSvg(stats, theme) {
     text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; }
     .counter { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-variant-numeric: tabular-nums; }
     .headline { animation: rise .9s cubic-bezier(.2,.6,.2,1) both; }
-    .hairline { stroke-dasharray: 1; animation: draw 1.9s cubic-bezier(.45,0,.2,1) .5s both; }
-    .now { animation: fade .7s ease-out 2.1s both; }
+    .hairline { stroke-dasharray: 1 2; animation: draw 2.4s cubic-bezier(.45,0,.2,1) .4s both; }
+    .now { animation: fade .7s ease-out 2.5s both; }
     .counter { animation: fade .8s ease-out 1.5s both; }
     @keyframes rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
-    @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes draw { from { stroke-dashoffset: 1.35; } to { stroke-dashoffset: 0; } }
     @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
     @media (prefers-reduced-motion: reduce) {
       .headline, .hairline, .now, .counter { animation: none; }

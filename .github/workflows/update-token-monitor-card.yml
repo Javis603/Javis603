@@ -3,7 +3,7 @@ name: Update Token Monitor Card
 on:
   workflow_dispatch:
   schedule:
-    - cron: '23 * * * *'
+    - cron: '23 */6 * * *'
 
 permissions:
   contents: write
